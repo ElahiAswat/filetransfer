@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Secure File Transfer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/logo_bgremoved64.png?=v2" type="image/png" />
+
+  <style>
+    body {
+      background-color: #0d0d0d;
+      color: white;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding-top: 4vh;
+      padding: 2rem;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+
+    img.logo-above-title {
+      width: 80px;
+      height: auto;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      text-align: center;
+      color: #ccffcc;
+      text-shadow: 0 0 10px #00ff88;
+      margin-bottom: 2rem;
+      font-size: 2rem;
+    }
+
+    form, #controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      width: 100%;
+      max-width: 400px;
+      padding: 1.5rem;
+      border: 2px solid #00ff88;
+      border-radius: 8px;
+      background-color: #111;
+      box-shadow: 0 0 20px #00ff88;
+    }
+
+    input[type="file"] {
+      color: white;
+      align-self: flex-end;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 260px;
+    }
+
+    button {
+      padding: 0.7rem 1.5rem;
+      border: 2px solid #00ff88;
+      border-radius: 4px;
+      background-color: transparent;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    button:hover {
+      background-color: #00ff88;
+      color: black;
+    }
+
+    ul#fileList {
+      margin-top: 2rem;
+      list-style: none;
+      padding: 0;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    ul#fileList li a {
+      color: #ccffcc;
+      text-decoration: underline;
+    }
+
+    #loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    .loading-box {
+      background-color: #111;
+      border: 2px solid #00ff88;
+      padding: 1rem;
+      color: lime;
+      font-family: monospace;
+      font-size: 1.5rem;
+      width: 90%;
+      max-width: 800px;
+      text-align: left;
+      box-shadow: 0 0 20px lime;
+    }
+
+  .hashtags {
+    font-family: monospace;
+    white-space: pre;
+    font-size: 1.2rem;
+    text-align: left;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+
+      .loading-box {
+        font-size: 1rem;
+        width: 90%;
+        max-width: 400px;
+      }
+
+      button {
+        font-size: 1rem;
+      }
+    }
+    @media (max-width: 500px) {
+  .hashtags {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <!-- Image above title -->
+  <img src="/skeletalimage.png" alt="Logo" class="logo-above-title" />
+
+  <h1>Secure File Transfer</h1>
+
+  <div id="loading">
+    <div class="loading-box">
+      <div>Uploading...</div>
+      <div class="hashtags" id="progressBar">[                                                  ]</div>
+    </div>
+  </div>
+
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="file" name="file" required />
+    <button type="submit">Upload</button>
+  </form>
+
+  <div id="controls">
+    <button id="showFilesBtn">Show Uploaded Files</button>
+    <ul id="fileList"></ul>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
