@@ -4,10 +4,7 @@
   <meta charset="UTF-8" />
   <title>Secure File Transfer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Favicon -->
   <link rel="icon" href="/logo_bgremoved64.png?=v2" type="image/png" />
-
   <style>
     body {
       background-color: #0d0d0d;
@@ -37,7 +34,7 @@
       font-size: 2rem;
     }
 
-    form, #controls {
+    form, #controls, #passwordForm {
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -49,6 +46,38 @@
       border-radius: 8px;
       background-color: #111;
       box-shadow: 0 0 20px #00ff88;
+    }
+
+    #passwordForm input[type="password"] {
+      padding: 0.7rem;
+      border: 2px solid #00ff88;
+      border-radius: 4px;
+      background-color: #222;
+      color: white;
+      font-family: monospace;
+      font-size: 1rem;
+      width: 100%;
+      max-width: 260px;
+    }
+
+    #passwordForm input[type="password"]:focus {
+      outline: none;
+      box-shadow: 0 0 10px #00ff88;
+    }
+
+    .error-message {
+      color: #ff4444;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+
+    #mainContent {
+      display: none;
+      width: 100%;
+      max-width: 400px;
+      align-items: center;
+      flex-direction: column;
+      gap: 2rem;
     }
 
     input[type="file"] {
@@ -73,6 +102,16 @@
     button:hover {
       background-color: #00ff88;
       color: black;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    button:disabled:hover {
+      background-color: transparent;
+      color: white;
     }
 
     ul#fileList {
@@ -113,64 +152,131 @@
       max-width: 800px;
       text-align: left;
       box-shadow: 0 0 20px lime;
+      position: relative;
     }
 
-  .hashtags {
-    font-family: monospace;
-    white-space: pre;
-    font-size: 1.2rem;
-    text-align: left;
-    overflow-x: hidden;
-    width: 100%;
-  }
+    .hashtags {
+      font-family: monospace;
+      white-space: pre;
+      font-size: 1.2rem;
+      text-align: left;
+      overflow-x: hidden;
+      width: 100%;
+      margin: 1rem 0;
+    }
 
+    .progress-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 1rem;
+      width: 100%;
+    }
 
+    .control-btn {
+      padding: 0.5rem 1rem;
+      border: 2px solid #ff4444;
+      border-radius: 4px;
+      background-color: transparent;
+      color: #ff4444;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1rem;
+    }
+
+    .control-btn:hover {
+      background-color: #ff4444;
+      color: white;
+    }
+
+    .control-btn.pause {
+      border-color: #ff4444;
+      color: #ff4444;
+    }
+
+    .control-btn.pause:hover {
+      background-color: #ff4444;
+      color: white;
+    }
+
+    .control-btn.resume {
+      border-color: #00ff88;
+      color: #00ff88;
+    }
+
+    .control-btn.resume:hover {
+      background-color: #00ff88;
+      color: black;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      color: #ff4444;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 25px;
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-btn:hover {
+      color: #ff6666;
+    }
 
     @media (max-width: 600px) {
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      .loading-box {
-        font-size: 1rem;
-        width: 90%;
-        max-width: 400px;
-      }
-
-      button {
-        font-size: 1rem;
-      }
+      h1 { font-size: 1.5rem; }
+      .loading-box { font-size: 1rem; max-width: 400px; }
+      button { font-size: 1rem; }
     }
-    @media (max-width: 500px) {
-  .hashtags {
-    font-size: 1rem;
-    line-height: 1.2;
-  }
-}
 
+    @media (max-width: 500px) {
+      .hashtags { font-size: 1rem; line-height: 1.2; }
+    }
   </style>
 </head>
 <body>
-  <!-- Image above title -->
   <img src="/skeletalimage.png" alt="Logo" class="logo-above-title" />
-
   <h1>Secure File Transfer</h1>
 
-  <div id="loading">
-    <div class="loading-box">
-      <div>Uploading...</div>
-      <div class="hashtags" id="progressBar">[                                                  ]</div>
-    </div>
+  <!-- Password Form -->
+  <div id="passwordForm">
+    <h3>Enter Password</h3>
+    <input type="password" id="passwordInput" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <div id="errorMessage" class="error-message" style="display: none;"></div>
   </div>
 
-  <form id="uploadForm" enctype="multipart/form-data">
-    <input type="file" name="file" required />
-    <button type="submit">Upload</button>
-  </form>
+  <!-- Main Content (hidden until authenticated) -->
+  <div id="mainContent">
+    <div id="loading">
+      <div class="loading-box">
+        <button class="close-btn" id="closeBtn">×</button>
+        <div id="loadingText">Uploading...</div>
+        <div class="hashtags" id="progressBar">[                                                  ]</div>
+        <div class="progress-controls">
+          <button class="control-btn pause" id="pauseBtn">| |</button>
+          <button class="control-btn resume" id="resumeBtn" style="display: none;">▶</button>
+        </div>
+      </div>
+    </div>
 
-  <div id="controls">
-    <button id="showFilesBtn">Show Uploaded Files</button>
-    <ul id="fileList"></ul>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="files" multiple required />
+      <button type="submit">Upload</button>
+    </form>
+
+    <div id="controls">
+      <button id="showFilesBtn">Show Uploaded Files</button>
+      <ul id="fileList"></ul>
+    </div>
   </div>
 
   <script src="app.js"></script>
